@@ -21,12 +21,92 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Timber.plant(Timber.DebugTree())
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
 
-        setupTaskObservable()
+        // Primeiro exemplo utilizando fromIterable com uma lista pré-definida
+        //setupTaskObservableFromIterable()
+
+        // Exemplo de utilização de Create - cria um emitter pra criar dinamicamente
+        // (é o mais flexível)
+        //setupTaskObservableCreate()
+
+        // Exemplo de utilização de Just - apenas um objeto
+        //setupTaskObservableJust()
+
+        // Exemplo de utilização de Range - apenas um intervalo numérico
+        //setupTaskObservableRange()
+
+        // Exemplo de utilização de Range + Repeat - repete uma mesma operação várias vezes
+        setupTaskObservableRepeat()
+
+        // Acesso à tela de posts, onde foi criado um exemplo de trabalho com flatMap
         setupOnClickPostButton()
+    }
+
+    private fun setupTaskObservableRepeat() {
+        val taskObservable = Observable.range(0, 3)
+            .subscribeOn(Schedulers.io())
+            .map {
+                // Tudo aqui dentro será executado em uma background thread
+                return@map Task("Priority: $it", false, it)
+            }.repeat(3)
+            .observeOn(AndroidSchedulers.mainThread())
+
+        taskObservable.defaultSubscribe {
+            Timber.d("onNext called: ${Thread.currentThread().name}")
+            Timber.d("onNext called: ${it.description}")
+        }
+    }
+
+    private fun setupTaskObservableRange() {
+        val taskObservable = Observable.range(0, 9)
+            .subscribeOn(Schedulers.io())
+            .map {
+                // Tudo aqui dentro será executado em uma background thread
+                return@map Task("Priority: $it", false, it)
+            }.takeWhile {
+                //Apenas exemplo pra mostrar como funciona takeWhile, ele está em prioridade em relação ao range
+                return@takeWhile it.priority < 5
+            }.observeOn(AndroidSchedulers.mainThread())
+
+        taskObservable.defaultSubscribe {
+            Timber.d("onNext called: ${Thread.currentThread().name}")
+            Timber.d("onNext called: ${it.description}")
+        }
+    }
+
+    private fun setupTaskObservableCreate() {
+        val task = Task("Example task do create shit", false, 1)
+        val taskObservable = Observable.create<Task> {
+            // Posso pegar a lista pré-definida pra fazer um loop fazendo isso,
+            //fica basicamente a mesma que com Iterable
+            if (!it.isDisposed) {
+                it.onNext(task)
+                it.onComplete()
+            }
+        }.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+
+        taskObservable.defaultSubscribe {
+            Timber.d("onNext called: ${Thread.currentThread().name}")
+            Timber.d("onNext called: ${it.description}")
+        }
+    }
+
+    private fun setupTaskObservableJust() {
+        val task = Task("Example task do create shit", false, 1)
+        val taskObservable = Observable.just(task)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+
+        taskObservable.defaultSubscribe {
+            Timber.d("onNext called: ${Thread.currentThread().name}")
+            Timber.d("onNext called: ${it.description}")
+        }
     }
 
     private fun setupOnClickPostButton() {
@@ -36,7 +116,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupTaskObservable() {
+    private fun setupTaskObservableFromIterable() {
         val taskObservable = Observable.fromIterable(DataSource.createTaskList())
             .subscribeOn(Schedulers.io())
             .filter { task ->
@@ -45,15 +125,21 @@ class MainActivity : AppCompatActivity() {
             }
             .observeOn(AndroidSchedulers.mainThread())
 
-        taskObservable.subscribe(object : Observer<Task> {
+        taskObservable.defaultSubscribe {
+            Timber.d("onNext called: ${Thread.currentThread().name}")
+            Timber.d("onNext called: ${it.description}")
+        }
+    }
+
+    private fun <T> Observable<T>.defaultSubscribe(onNext: (T) -> Unit) {
+        subscribe(object : Observer<T> {
             override fun onSubscribe(d: Disposable) {
                 Timber.d("onSubscribe called")
                 disposable.add(d)
             }
 
-            override fun onNext(task: Task) {
-                Timber.d("onNext called: ${Thread.currentThread().name}")
-                Timber.d("onNext called: ${task.description}")
+            override fun onNext(task: T) {
+                onNext(task)
             }
 
             override fun onError(e: Throwable) {

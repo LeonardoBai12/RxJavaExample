@@ -24,6 +24,8 @@ class PostActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Timber.plant(Timber.DebugTree())
+
         binding = ActivityPostBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
