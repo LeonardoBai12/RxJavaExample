@@ -1,17 +1,20 @@
 package io.lb.rxjavaexample.model.post
 
 import com.google.gson.annotations.SerializedName
+import io.lb.rxjavaexample.model.comment.Comment
 
 data class Post(
     @SerializedName("userId")
-    private val userId: Int = 0,
+    var userId: Int = 0,
 
     @SerializedName("id")
-    private val id: Int = 0,
+    var id: Int = 0,
 
     @SerializedName("title")
-    private val title: String? = null,
+    var title: String? = null,
 
     @SerializedName("body")
-    private val body: String? = null,
+    var body: String? = null,
+
+    var comments: ArrayList<Comment> = arrayListOf(),
 )
