@@ -9,12 +9,14 @@ import io.lb.rxjavaexample.util.DataSource
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Observer
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private val disposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +31,7 @@ class MainActivity : AppCompatActivity() {
         taskObservable.subscribe(object : Observer<Task> {
             override fun onSubscribe(d: Disposable) {
                 Log.d("MainActivity", "onSubscribe called")
+                disposable.add(d)
             }
             override fun onNext(task: Task) {
                 Log.d("MainActivity", "onNext called: ${Thread.currentThread().name}")
@@ -41,5 +44,14 @@ class MainActivity : AppCompatActivity() {
                 Log.d("MainActivity", "onComplete called")
             }
         })
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        disposable.clear()
+
+        // Dispose é como se fosse um hard clear, enquanto o clear só limpa os subcribers
+        // e tudo mais, sem "matar" os observables -> geralmente é melhor usar o clear()
+        // disposable.dispose()
     }
 }
