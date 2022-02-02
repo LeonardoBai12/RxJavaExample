@@ -14,6 +14,7 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -41,10 +42,40 @@ class MainActivity : AppCompatActivity() {
         //setupTaskObservableRange()
 
         // Exemplo de utilização de Range + Repeat - repete uma mesma operação várias vezes
-        setupTaskObservableRepeat()
+        //setupTaskObservableRepeat()
+
+        // Exemplo de Interval com TakeWhile - intervale de tempo com o TakeWhile limitando
+        //setupTaskObservableInterval()
+
+        // Exemplo de Timer - efetua a operação de um observable após o tempo determinado ter se passado
+        //setupTaskObservableTimer()
 
         // Acesso à tela de posts, onde foi criado um exemplo de trabalho com flatMap
         setupOnClickPostButton()
+    }
+
+    private fun setupTaskObservableTimer() {
+        val taskObservable = Observable.timer(3, TimeUnit.SECONDS)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+
+        taskObservable.defaultSubscribe {
+            Timber.d("onNext called: ${Thread.currentThread().name}")
+            Timber.d("onNext called: $it seconds")
+        }
+    }
+
+    private fun setupTaskObservableInterval() {
+        val taskObservable = Observable.interval(1, TimeUnit.SECONDS)
+            .subscribeOn(Schedulers.io())
+            .takeWhile {
+                return@takeWhile it < 10
+            }.observeOn(AndroidSchedulers.mainThread())
+
+        taskObservable.defaultSubscribe {
+            Timber.d("onNext called: ${Thread.currentThread().name}")
+            Timber.d("onNext called: $it seconds")
+        }
     }
 
     private fun setupTaskObservableRepeat() {
