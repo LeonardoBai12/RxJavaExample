@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">RxJavaExample</string>
     <string name="btn_post_activity">TELA DE POSTS</string>
+    <string name="btn_examples">Exemplos</string>
 </resources>
