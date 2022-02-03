@@ -1,6 +1,6 @@
-package io.lb.rxjavaexample.model.toDo
+package io.lb.rxjavaexample.model.todo
 
-object ToDoConstants {
+object TodoConstants {
     const val USER_ID = "userId"
     const val ID = "id"
     const val TITLE = "title"

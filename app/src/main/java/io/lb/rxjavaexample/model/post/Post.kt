@@ -2,7 +2,6 @@ package io.lb.rxjavaexample.model.post
 
 import com.google.gson.annotations.SerializedName
 import io.lb.rxjavaexample.model.comment.Comment
-import io.lb.rxjavaexample.model.toDo.ToDo
 
 data class Post(
     @SerializedName(PostConstants.USER_ID)

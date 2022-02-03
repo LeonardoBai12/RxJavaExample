@@ -34,7 +34,16 @@ class MainActivity : BaseActivity() {
 
         // Acesso à tela de exemplos, onde foram criados vários exemplos de funcionalidades do RxJava
         setupOnClickExamplesButton()
+
+        // Acesso à tela de exemplos, onde foram criados vários exemplos de funcionalidades do RxJava
+        setupOnClickTodoButton()
     }
+
+    private fun setupOnClickTodoButton() {
+        binding.btnTodoActivity.setOnClickListener {
+            val intent = Intent(this, ExamplesActivity::class.java)
+            startActivity(intent)
+        }    }
 
     private fun setupOnClickExamplesButton() {
         binding.btnExamplesActivity.setOnClickListener {

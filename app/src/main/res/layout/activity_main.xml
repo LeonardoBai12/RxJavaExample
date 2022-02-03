@@ -36,7 +36,7 @@
         android:id="@+id/btnTodoActivity"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:text="@string/btn_examples"
+        android:text="@string/btn_todos"
         app:layout_constraintTop_toBottomOf="@+id/btnPostsActivity"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
