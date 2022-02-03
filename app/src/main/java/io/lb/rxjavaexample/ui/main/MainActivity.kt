@@ -7,6 +7,7 @@ import io.lb.rxjavaexample.databinding.ActivityMainBinding
 import io.lb.rxjavaexample.model.task.Task
 import io.lb.rxjavaexample.ui.examples.ExamplesActivity
 import io.lb.rxjavaexample.ui.post.PostActivity
+import io.lb.rxjavaexample.ui.todo.TodoActivity
 import io.lb.rxjavaexample.util.BaseActivity
 import io.lb.rxjavaexample.util.DataSource
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -41,7 +42,7 @@ class MainActivity : BaseActivity() {
 
     private fun setupOnClickTodoButton() {
         binding.btnTodoActivity.setOnClickListener {
-            val intent = Intent(this, ExamplesActivity::class.java)
+            val intent = Intent(this, TodoActivity::class.java)
             startActivity(intent)
         }    }
 

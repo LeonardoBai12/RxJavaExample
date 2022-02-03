@@ -16,5 +16,5 @@ interface RequestApi {
     fun getComments(@Path("id") id: Int): Observable<List<Comment>>
 
     @GET("todos")
-    fun getToDos(): Flowable<ArrayList<Todo>>
+    fun getToDos(): Observable<ArrayList<Todo>>
 }

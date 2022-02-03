@@ -1,16 +1,14 @@
 package io.lb.rxjavaexample.ui.todo
 
 import android.os.Bundle
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.lb.rxjavaexample.databinding.ActivityTodoBinding
 import io.lb.rxjavaexample.model.todo.Todo
 import io.lb.rxjavaexample.util.BaseActivity
 import timber.log.Timber
 
-class TodoActivity: BaseActivity() {
+class TodoActivity : BaseActivity() {
     private lateinit var binding: ActivityTodoBinding
     private val todoAdapter = TodoAdapter()
     private lateinit var todoViewModel: TodoViewModel
