@@ -7,4 +7,5 @@ object PostConstants {
     const val ID = "id"
     const val TITLE = "title"
     const val BODY = "body"
+    const val COMMENTS = "comments"
 }

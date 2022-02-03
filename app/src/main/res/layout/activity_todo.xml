@@ -5,7 +5,7 @@
     tools:context=".ui.post.PostActivity">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvPosts"
+        android:id="@+id/rvTodos"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
