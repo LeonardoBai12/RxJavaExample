@@ -3,12 +3,11 @@ package io.lb.rxjavaexample.network
 import io.lb.rxjavaexample.model.comment.Comment
 import io.lb.rxjavaexample.model.post.Post
 import io.lb.rxjavaexample.model.todo.Todo
-import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Observable
 import retrofit2.http.GET
 import retrofit2.http.Path
 
-interface RequestApi {
+interface RetrofitServiceInterface {
     @GET("posts")
     fun getPosts(): Observable<ArrayList<Post>>
 

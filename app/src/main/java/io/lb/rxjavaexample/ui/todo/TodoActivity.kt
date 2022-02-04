@@ -1,21 +1,28 @@
 package io.lb.rxjavaexample.ui.todo
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.lb.rxjavaexample.databinding.ActivityTodoBinding
 import io.lb.rxjavaexample.model.todo.Todo
 import io.lb.rxjavaexample.util.BaseActivity
 import timber.log.Timber
+import javax.inject.Inject
 
 class TodoActivity : BaseActivity() {
     private lateinit var binding: ActivityTodoBinding
     private val todoAdapter = TodoAdapter()
-    private lateinit var todoViewModel: TodoViewModel
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    private val todoViewModel: TodoViewModel by viewModels {
+        viewModelFactory
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Timber.plant(Timber.DebugTree())
 
         binding = ActivityTodoBinding.inflate(layoutInflater)
         val view = binding.root
@@ -27,7 +34,6 @@ class TodoActivity : BaseActivity() {
     }
 
     private fun setupViewModel() {
-        todoViewModel = ViewModelProvider(this)[TodoViewModel::class.java]
         todoViewModel.makeQuery().observe(this) {
             updateList(it ?: arrayListOf())
         }

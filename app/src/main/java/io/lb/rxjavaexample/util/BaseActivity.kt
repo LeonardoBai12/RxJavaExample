@@ -1,13 +1,13 @@
 package io.lb.rxjavaexample.util
 
-import androidx.appcompat.app.AppCompatActivity
+import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Observer
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import timber.log.Timber
 
-open class BaseActivity: AppCompatActivity() {
+open class BaseActivity: DaggerAppCompatActivity() {
     val disposable = CompositeDisposable()
 
     fun <T> Observable<T>.defaultSubscribe(onNext: (T) -> Unit) {

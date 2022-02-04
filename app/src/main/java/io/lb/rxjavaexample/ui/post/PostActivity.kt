@@ -1,30 +1,27 @@
 package io.lb.rxjavaexample.ui.post
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.lb.rxjavaexample.databinding.ActivityPostBinding
 import io.lb.rxjavaexample.model.post.Post
-import io.lb.rxjavaexample.network.ServiceGenerator
+import io.lb.rxjavaexample.network.RetrofitServiceInterface
 import io.lb.rxjavaexample.util.BaseActivity
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Observer
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
-import timber.log.Timber
 import java.util.*
+import javax.inject.Inject
 import kotlin.collections.ArrayList
 
 class PostActivity : BaseActivity() {
+    @Inject
+    lateinit var retrofitServiceInterface: RetrofitServiceInterface
 
     private lateinit var binding: ActivityPostBinding
     private val postAdapter = PostAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Timber.plant(Timber.DebugTree())
 
         binding = ActivityPostBinding.inflate(layoutInflater)
         val view = binding.root
@@ -42,7 +39,7 @@ class PostActivity : BaseActivity() {
     }
 
     private fun getCommentsObservable(post: Post): Observable<Post> {
-        return ServiceGenerator.requestApi.getComments(post.id).map {
+        return retrofitServiceInterface.getComments(post.id).map {
             //Criado um delay pra simular carregamentos assíncronos em uma lista
             val delay = (Random().nextInt(5) + 1) * 1000
             Thread.sleep(delay.toLong())
@@ -52,11 +49,12 @@ class PostActivity : BaseActivity() {
     }
 
     private fun setupPostObservable(): Observable<Post> {
-        return ServiceGenerator.requestApi
+        return retrofitServiceInterface
             .getPosts()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .flatMap {
+                // Flat map vai carregar em ordens aleatórias, se eu mudar pra concatMap, vai carregar em ordem
                 updateList(it)
                 return@flatMap Observable.fromIterable(it).subscribeOn(Schedulers.io())
             }

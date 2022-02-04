@@ -24,7 +24,6 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Timber.plant(Timber.DebugTree())
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
@@ -58,14 +57,5 @@ class MainActivity : BaseActivity() {
             val intent = Intent(this, PostActivity::class.java)
             startActivity(intent)
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        disposable.clear()
-
-        // Dispose é como se fosse um hard clear, enquanto o clear só limpa os subcribers
-        // e tudo mais, sem "matar" os observables -> geralmente é melhor usar o clear()
-        // disposable.dispose()
     }
 }

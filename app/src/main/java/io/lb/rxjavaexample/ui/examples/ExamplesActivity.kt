@@ -18,7 +18,6 @@ class ExamplesActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Timber.plant(Timber.DebugTree())
 
         binding = ActivityExamplesBinding.inflate(layoutInflater)
         val view = binding.root
