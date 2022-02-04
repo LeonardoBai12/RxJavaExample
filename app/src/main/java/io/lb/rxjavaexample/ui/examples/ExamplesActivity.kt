@@ -23,7 +23,7 @@ class ExamplesActivity : BaseActivity() {
         setContentView(view)
 
         // Primeiro exemplo utilizando fromIterable com uma lista pré-definida
-        //setupTaskObservableFromIterable()
+        //setupTaskObservableFromIterableFilterDistinct()
 
         // Exemplo de utilização de Create - cria um emitter pra criar dinamicamente
         // (é o mais flexível)
@@ -36,7 +36,7 @@ class ExamplesActivity : BaseActivity() {
         //setupTaskObservableRange()
 
         // Exemplo de utilização de Range + Repeat - repete uma mesma operação várias vezes
-        //setupTaskObservableRepeat()
+        //setupTaskObservableRepeatMap()
 
         // Exemplo de Interval com TakeWhile - intervale de tempo com o TakeWhile limitando
         //setupTaskObservableInterval()
@@ -69,11 +69,14 @@ class ExamplesActivity : BaseActivity() {
         }
     }
 
-    private fun setupTaskObservableRepeat() {
+    private fun setupTaskObservableRepeatMap() {
         val taskObservable = Observable.range(0, 3)
             .subscribeOn(Schedulers.io())
             .map {
                 // Tudo aqui dentro será executado em uma background thread
+                // Map transforma um tipo de objeto em outro para ser observado.
+                // No caso transforma inteiros do repeat em tarefas.
+                // Poderia transformar uma task em strings, por exemplo
                 return@map Task("Priority: $it", false, it)
             }.repeat(3)
             .observeOn(AndroidSchedulers.mainThread())
@@ -131,15 +134,19 @@ class ExamplesActivity : BaseActivity() {
         }
     }
 
-    private fun setupTaskObservableFromIterable() {
+    private fun setupTaskObservableFromIterableFilterDistinct() {
         // fromCallable(útil pra trabalhar com Room ou Retrofit), fromArray e fromIterable - auto explicativo
         val taskObservable = Observable.fromIterable(DataSource.createTaskList())
             .subscribeOn(Schedulers.io())
             .filter { task ->
+                // Neste caso, só vai observar as tarefas completas
+                // Filter, como o nome diz, é como se fosse um WHERE fora da query
                 Timber.d("test: ${Thread.currentThread().name}")
-                task.isComplete
-            }
-            .observeOn(AndroidSchedulers.mainThread())
+                return@filter task.isComplete
+            }.distinct {
+                // Neste caso, se tiver tarefas com a mesma descrição, não irá repeti-las
+                return@distinct it.description
+            }.observeOn(AndroidSchedulers.mainThread())
 
         taskObservable.defaultSubscribe {
             Timber.d("onNext called: ${Thread.currentThread().name}")

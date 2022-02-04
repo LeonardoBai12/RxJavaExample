@@ -9,6 +9,7 @@ class TodoViewModel : BaseViewModel() {
     private val repository = TodoRepository()
 
     fun makeQuery(): LiveData<ArrayList<Todo>> {
+        // Um exemplo caso quiséssemos transformar um observável em LiveData
         return repository.makeReactiveQueryForTodos().toLiveData()
     }
 }
