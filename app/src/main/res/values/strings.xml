@@ -3,4 +3,6 @@
     <string name="btn_post_activity">TELA DE POSTS</string>
     <string name="btn_examples">Exemplos</string>
     <string name="btn_todos">Tarefas (MVVM)</string>
+    <string name="btn_run_example">Run</string>
+    <string name="btn_throttle_first">Throttle First Example</string>
 </resources>

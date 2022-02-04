@@ -78,9 +78,4 @@ class PostActivity : BaseActivity() {
     private fun updateList(posts: ArrayList<Post>) {
         postAdapter.updateList(posts)
     }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        disposable.clear()
-    }
 }

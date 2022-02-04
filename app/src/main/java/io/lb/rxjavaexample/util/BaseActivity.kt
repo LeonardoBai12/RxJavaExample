@@ -30,4 +30,13 @@ open class BaseActivity: AppCompatActivity() {
             }
         })
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        disposable.clear()
+
+        // Dispose é como se fosse um hard clear, enquanto o clear só limpa os subcribers
+        // e tudo mais, sem "matar" os observables -> geralmente é melhor usar o clear()
+        // disposable.dispose()
+    }
 }

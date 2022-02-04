@@ -1,6 +1,8 @@
 package io.lb.rxjavaexample.ui.examples
 
 import android.os.Bundle
+import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import io.lb.rxjavaexample.databinding.ActivityExamplesBinding
 import io.lb.rxjavaexample.model.task.Task
 import io.lb.rxjavaexample.util.BaseActivity
@@ -22,27 +24,99 @@ class ExamplesActivity : BaseActivity() {
         val view = binding.root
         setContentView(view)
 
-        // Primeiro exemplo utilizando fromIterable com uma lista pré-definida
-        //setupTaskObservableFromIterableFilterDistinct()
+        // Exemplo de Debounce - faz o subscribe após um delay para limitar a quantidade de requisições
+        // Pesquisa do instagram funciona assim, se fosse fazer letra a letra teriam requisições em muito maior escala
+        // no caso de .debounce(1, TimeUnit.SECONDS), assim que eu parar de digitar, um segundo depois, ele faz a requisição
+        setupTaskObservableDebounce()
 
-        // Exemplo de utilização de Create - cria um emitter pra criar dinamicamente
-        // (é o mais flexível)
-        //setupTaskObservableCreate()
+        // Exemplo de ThrottleFirst - resolve o problema de "button spamming"
+        // Só permite fazer uma segunda requisição após um intervalo de tempo
+        setupTaskObservableThrottleFirst()
 
-        // Exemplo de utilização de Just - apenas um objeto
-        //setupTaskObservableJust()
+        binding.btnRunExample.setOnClickListener {
+            // Primeiro exemplo utilizando fromIterable com uma lista pré-definida
+            //setupTaskObservableFromIterableFilterDistinctTake()
 
-        // Exemplo de utilização de Range - apenas um intervalo numérico
-        //setupTaskObservableRange()
+            // Exemplo de utilização de Create - cria um emitter pra criar dinamicamente
+            // (é o mais flexível)
+            //setupTaskObservableCreate()
 
-        // Exemplo de utilização de Range + Repeat - repete uma mesma operação várias vezes
-        //setupTaskObservableRepeatMap()
+            // Exemplo de utilização de Just - apenas um objeto
+            //setupTaskObservableJust()
 
-        // Exemplo de Interval com TakeWhile - intervale de tempo com o TakeWhile limitando
-        //setupTaskObservableInterval()
+            // Exemplo de utilização de Range - apenas um intervalo numérico
+            //setupTaskObservableRange()
 
-        // Exemplo de Timer - efetua a operação de um observable após o tempo determinado ter se passado
-        //setupTaskObservableTimer()
+            // Exemplo de utilização de Range + Repeat - repete uma mesma operação várias vezes
+            //setupTaskObservableRepeatMap()
+
+            // Exemplo de Interval com TakeWhile - intervale de tempo com o TakeWhile limitando
+            //setupTaskObservableInterval()
+
+            // Exemplo de Timer - efetua a operação de um observable após o tempo determinado ter se passado
+            //setupTaskObservableTimer()
+
+            // Exemplo de buffer - é um transformador, assim como map, debounce e flatmap
+            // Buffer vai fazer com que seja possível admitir objetos em grupos.
+            // Por exemplo, assim que tivermos 5 objetos prontos para serem admitidos, vamos para os próximos 5
+            // Também pode ser usado .buffer(4, Time.SECONDS), onde a cada 4 segundos ele verificará se houve alguma atualização
+            //setupTaskObservableBuffer()
+        }
+
+    }
+
+    private fun setupTaskObservableThrottleFirst() {
+        val taskObservable = Observable.create<Task> { emitter ->
+            val task = Task("throttleFirst", false, 1 )
+            binding.btnThrottleFirstExample.setOnClickListener {
+                if (!emitter.isDisposed) {
+                    emitter.onNext(task)
+                }
+            }
+        }.throttleFirst(4000, TimeUnit.MILLISECONDS)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+
+        taskObservable.defaultSubscribe {
+            Timber.d("onNext called: ${Thread.currentThread().name}")
+            Timber.d("onNext called: $it")
+            Toast.makeText(this, it.toString(),Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun setupTaskObservableDebounce() {
+        val observableQueryText = Observable.create<String> { emitter ->
+            binding.svSearchExample.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextChange(text: String?): Boolean {
+                    if (!emitter.isDisposed) {
+                        emitter.onNext(text ?: "")
+                    }
+                    return false
+                }
+
+                override fun onQueryTextSubmit(p0: String?): Boolean {
+                    return false
+                }
+            })
+        }.debounce(1, TimeUnit.SECONDS)
+            .subscribeOn(Schedulers.io())
+
+        observableQueryText.defaultSubscribe {
+            Timber.d("onNext called: ${Thread.currentThread().name}")
+            Timber.d("onNext called: $it")
+        }
+    }
+
+    private fun setupTaskObservableBuffer() {
+        val taskObservable = Observable.fromIterable(DataSource.createTaskList())
+            .buffer(2)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+
+        taskObservable.defaultSubscribe {
+            Timber.d("onNext called: ${Thread.currentThread().name}")
+            Timber.d("onNext called: $it")
+        }
     }
 
     private fun setupTaskObservableTimer() {
@@ -134,7 +208,7 @@ class ExamplesActivity : BaseActivity() {
         }
     }
 
-    private fun setupTaskObservableFromIterableFilterDistinct() {
+    private fun setupTaskObservableFromIterableFilterDistinctTake() {
         // fromCallable(útil pra trabalhar com Room ou Retrofit), fromArray e fromIterable - auto explicativo
         val taskObservable = Observable.fromIterable(DataSource.createTaskList())
             .subscribeOn(Schedulers.io())
@@ -146,20 +220,12 @@ class ExamplesActivity : BaseActivity() {
             }.distinct {
                 // Neste caso, se tiver tarefas com a mesma descrição, não irá repeti-las
                 return@distinct it.description
-            }.observeOn(AndroidSchedulers.mainThread())
+            }.take(3) // Take fará mostrar apenas a quantidade de elementos parametrizada
+            .observeOn(AndroidSchedulers.mainThread())
 
         taskObservable.defaultSubscribe {
             Timber.d("onNext called: ${Thread.currentThread().name}")
             Timber.d("onNext called: ${it.description}")
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        disposable.clear()
-
-        // Dispose é como se fosse um hard clear, enquanto o clear só limpa os subcribers
-        // e tudo mais, sem "matar" os observables -> geralmente é melhor usar o clear()
-        // disposable.dispose()
     }
 }
