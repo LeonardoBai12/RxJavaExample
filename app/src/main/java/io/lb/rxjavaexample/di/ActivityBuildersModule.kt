@@ -2,6 +2,8 @@ package io.lb.rxjavaexample.di
 
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
+import io.lb.rxjavaexample.di.post.PostModule
+import io.lb.rxjavaexample.di.post.PostViewModelModule
 import io.lb.rxjavaexample.di.todo.TodoModule
 import io.lb.rxjavaexample.di.todo.TodoViewModelModule
 import io.lb.rxjavaexample.ui.examples.ExamplesActivity
@@ -14,7 +16,12 @@ abstract class ActivityBuildersModule {
     @ContributesAndroidInjector
     abstract fun contributeMainActivity(): MainActivity
 
-    @ContributesAndroidInjector
+    @ContributesAndroidInjector(
+        modules = [
+            PostModule::class,
+            PostViewModelModule::class,
+        ]
+    )
     abstract fun contributePostActivity(): PostActivity
 
     @ContributesAndroidInjector

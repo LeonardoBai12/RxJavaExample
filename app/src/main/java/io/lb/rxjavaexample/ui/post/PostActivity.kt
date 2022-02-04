@@ -1,6 +1,8 @@
 package io.lb.rxjavaexample.ui.post
 
 import android.os.Bundle
+import androidx.activity.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.lb.rxjavaexample.databinding.ActivityPostBinding
 import io.lb.rxjavaexample.model.post.Post
@@ -14,11 +16,15 @@ import javax.inject.Inject
 import kotlin.collections.ArrayList
 
 class PostActivity : BaseActivity() {
-    @Inject
-    lateinit var retrofitServiceInterface: RetrofitServiceInterface
-
     private lateinit var binding: ActivityPostBinding
     private val postAdapter = PostAdapter()
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    private val postViewModel: PostViewModel by viewModels {
+        viewModelFactory
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,28 +37,14 @@ class PostActivity : BaseActivity() {
 
         setupPostObservable().subscribeOn(Schedulers.io())
             .flatMap {
-                return@flatMap getCommentsObservable(it)
-            }.observeOn(AndroidSchedulers.mainThread())
-            .defaultSubscribe {
+                return@flatMap postViewModel.getCommentsObservable(it)
+            }.defaultSubscribe {
                 updatePost(it)
             }
     }
 
-    private fun getCommentsObservable(post: Post): Observable<Post> {
-        return retrofitServiceInterface.getComments(post.id).map {
-            //Criado um delay pra simular carregamentos assíncronos em uma lista
-            val delay = (Random().nextInt(5) + 1) * 1000
-            Thread.sleep(delay.toLong())
-            post.comments.addAll(it)
-            return@map post
-        }.subscribeOn(Schedulers.io())
-    }
-
     private fun setupPostObservable(): Observable<Post> {
-        return retrofitServiceInterface
-            .getPosts()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+        return postViewModel.setupPostObservable()
             .flatMap {
                 // Flat map vai carregar em ordens aleatórias, se eu mudar pra concatMap, vai carregar em ordem
                 updateList(it)
