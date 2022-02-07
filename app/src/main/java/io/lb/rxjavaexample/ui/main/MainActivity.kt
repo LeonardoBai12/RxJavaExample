@@ -3,6 +3,7 @@ package io.lb.rxjavaexample.ui.main
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import io.lb.rxjavaexample.R
 import io.lb.rxjavaexample.databinding.ActivityMainBinding
 import io.lb.rxjavaexample.model.task.Task
 import io.lb.rxjavaexample.ui.examples.ExamplesActivity
@@ -24,6 +25,7 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setTheme(R.style.Theme_RxJavaExample)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
