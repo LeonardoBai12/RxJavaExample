@@ -11,12 +11,12 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 class PostRepository(
     private val retrofitServiceInterface: RetrofitServiceInterface,
 ) {
-    fun makeReactiveQueryForPosts(): Observable<ArrayList<Post>> {
+    fun makeReactiveQueryForPosts(): Flowable<ArrayList<Post>> {
         return retrofitServiceInterface.getPosts().subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    fun makeReactiveQueryForComments(id: Int): Observable<List<Comment>> {
+    fun makeReactiveQueryForComments(id: Int): Flowable<List<Comment>> {
         return retrofitServiceInterface.getComments(id).subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }

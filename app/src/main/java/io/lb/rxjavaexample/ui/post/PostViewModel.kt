@@ -15,12 +15,14 @@ class PostViewModel @Inject constructor(
 ) : BaseViewModel() {
     fun setupPostObservable(): Observable<ArrayList<Post>> {
         return repository.makeReactiveQueryForPosts()
+            .toObservable()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
     fun setupCommentsObservable(post: Post): Observable<Post> {
         return repository.makeReactiveQueryForComments(post.id)
+            .toObservable()
             .map {
                 //Criado um delay pra simular carregamentos assíncronos em uma lista
                 val delay = (Random().nextInt(2) + 1) * 1000

@@ -10,10 +10,10 @@ import retrofit2.http.Path
 
 interface RetrofitServiceInterface {
     @GET("posts")
-    fun getPosts(): Observable<ArrayList<Post>>
+    fun getPosts(): Flowable<ArrayList<Post>>
 
     @GET("posts/{id}/comments")
-    fun getComments(@Path("id") id: Int): Observable<List<Comment>>
+    fun getComments(@Path("id") id: Int): Flowable<List<Comment>>
 
     @GET("todos")
     fun getToDos(): Observable<ArrayList<Todo>>
