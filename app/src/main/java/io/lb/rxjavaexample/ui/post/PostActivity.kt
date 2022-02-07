@@ -6,12 +6,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.lb.rxjavaexample.databinding.ActivityPostBinding
 import io.lb.rxjavaexample.model.post.Post
-import io.lb.rxjavaexample.network.RetrofitServiceInterface
 import io.lb.rxjavaexample.util.BaseActivity
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
 
@@ -37,7 +35,7 @@ class PostActivity : BaseActivity() {
 
         setupPostObservable().subscribeOn(Schedulers.io())
             .flatMap {
-                return@flatMap postViewModel.getCommentsObservable(it)
+                return@flatMap postViewModel.setupCommentsObservable(it)
             }.defaultSubscribe {
                 updatePost(it)
             }
@@ -46,9 +44,11 @@ class PostActivity : BaseActivity() {
     private fun setupPostObservable(): Observable<Post> {
         return postViewModel.setupPostObservable()
             .flatMap {
-                // Flat map vai carregar em ordens aleatórias, se eu mudar pra concatMap, vai carregar em ordem
+                // Flat map vai carregar em ordens aleatórias, se eu mudar
+                //pra concatMap, vai carregar em ordem
                 updateList(it)
-                return@flatMap Observable.fromIterable(it).subscribeOn(Schedulers.io())
+                return@flatMap Observable.fromIterable(it)
+                    .subscribeOn(Schedulers.io())
             }
     }
 

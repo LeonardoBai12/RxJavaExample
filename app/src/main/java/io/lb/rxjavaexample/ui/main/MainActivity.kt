@@ -45,7 +45,8 @@ class MainActivity : BaseActivity() {
         binding.btnTodoActivity.setOnClickListener {
             val intent = Intent(this, TodoActivity::class.java)
             startActivity(intent)
-        }    }
+        }
+    }
 
     private fun setupOnClickExamplesButton() {
         binding.btnExamplesActivity.setOnClickListener {
